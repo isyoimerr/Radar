@@ -1,0 +1,22 @@
+name: RADAR - Consulta RSS programada
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ejecutar ronda remota
+        env:
+          RADAR_DEPLOY_URL: ${{ secrets.RADAR_DEPLOY_URL }}
+          RADAR_CRON_TOKEN: ${{ secrets.RADAR_CRON_TOKEN }}
+        run: |
+          if [ -z "$RADAR_DEPLOY_URL" ] || [ -z "$RADAR_CRON_TOKEN" ]; then
+            echo 'Configura los secrets RADAR_DEPLOY_URL y RADAR_CRON_TOKEN.'
+            exit 1
+          fi
+          curl --fail --show-error --silent --max-time 120 --retry 2 \
+            --request POST "${RADAR_DEPLOY_URL%/}/api/internal/collect" \
+            --header "x-radar-token: $RADAR_CRON_TOKEN" \
+            --header 'Content-Type: application/json'

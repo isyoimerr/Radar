@@ -1,0 +1,10 @@
+.env
+.env.*
+.venv/
+.pytest_cache/
+data/
+docs/
+tests/
+*.ipynb
+*.sqlite3*
+*.log

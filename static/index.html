@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es" data-type="software">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1524" />
+  <meta name="page-type" content="software" />
+  <meta name="site-kind" content="software" />
+  <meta name="description" content="RADAR: noticias conectadas con sus fuentes, contexto y revisión editorial." />
+  <title>RADAR | Noticias en contexto</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="/assets/fonts/geist-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/styles.css?v=__RADAR_STYLES_VERSION__" />
+  <script src="/assets/i18n.js?v=__RADAR_I18N_VERSION__" defer></script>
+  <script src="/assets/app.js?v=__RADAR_SCRIPT_VERSION__" defer></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+  <div class="site-shell">
+    <header class="site-header" id="site-header">
+      <div class="container nav-row">
+        <a class="brand" data-route="/" href="/" aria-label="RADAR, ir al inicio">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span class="brand-name">RADAR</span>
+        </a>
+        <nav class="desktop-nav" aria-label="Navegación principal">
+          <a data-route="/" href="/">Inicio</a><a data-route="/radar" href="/radar">Radar</a><a data-route="/boletines"
+            href="/boletines">Carrusel</a><a data-route="/fuentes" href="/fuentes">Fuentes</a>
+        </nav>
+        <div class="nav-tools">
+          <button type="button" class="settings-toggle" id="settings-button" aria-label="Configuración"
+            aria-haspopup="dialog" aria-controls="preferences-dialog">
+            <svg viewBox="0 0 24 24" width="20" aria-hidden="true"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.5"/><circle cx="15" cy="17" r="2.5"/></svg>
+          </button>
+          <button type="button" class="icon-btn search-toggle" id="search-toggle" aria-label="Abrir búsqueda"
+            aria-expanded="false" aria-controls="global-search-form"><svg viewBox="0 0 24 24" width="20" aria-hidden="true">
+              <circle cx="10.8" cy="10.8" r="7.3" /><path d="m16.2 16.2 5 5" />
+            </svg></button>
+          <form class="nav-search" id="global-search-form" role="search" hidden>
+            <input id="global-search" type="search" placeholder="Buscar noticias" aria-label="Buscar noticias" autocomplete="off" />
+            <button class="btn btn-dark" type="submit">Buscar</button>
+          </form>
+          <a class="btn nav-saved" data-route="/guardados" href="/guardados" aria-label="Guardados">
+            <svg viewBox="0 0 24 24" width="19" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+            <span>Guardados</span>
+          </a>
+          <button class="mobile-toggle icon-btn" id="menu-button" aria-label="Abrir navegación" aria-expanded="false"
+            aria-controls="mobile-menu"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+      <nav id="mobile-menu" class="mobile-menu" aria-label="Navegación móvil" hidden>
+        <a data-route="/" href="/">Inicio</a><a data-route="/radar" href="/radar">Radar de noticias</a><a
+          data-route="/boletines" href="/boletines">Carrusel</a><a data-route="/fuentes" href="/fuentes">Fuentes</a><a
+          data-route="/metodologia" href="/metodologia">Metodología</a><a data-route="/guardados"
+          href="/guardados">Guardados</a>
+      </nav>
+    </header>
+    <main id="main" tabindex="-1">
+      <div class="loading-shell"><span class="loader" aria-hidden="true"></span>
+        <p>Preparando RADAR…</p>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div><a href="/" data-route="/" class="footer-brand">◉ RADAR</a>
+        </div>
+        <div>
+          <h3>Explorar</h3><a data-route="/radar" href="/radar">Radar</a><a data-route="/boletines"
+            href="/boletines">Carrusel</a><a data-route="/fuentes" href="/fuentes">Fuentes</a>
+        </div>
+        <div>
+          <h3>Transparencia</h3><a data-route="/metodologia" href="/metodologia">Metodología</a><a
+            data-route="/privacidad" href="/privacidad">Privacidad</a><a data-route="/terminos"
+            href="/terminos">Términos de uso</a><button id="cookie-settings-footer" class="link-button">Preferencias de
+            cookies</button><a data-route="/acceso" href="/acceso">Acceso editorial</a>
+        </div>
+      </div>
+      <div class="container footer-bottom"><span>© RADAR · Proyecto independiente</span><span>Las noticias conservan la
+          atribución a sus respectivos medios.</span></div>
+    </footer>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="cookie-root"></div>
+  <dialog class="preferences-dialog" id="preferences-dialog" aria-labelledby="preferences-title">
+    <form method="dialog">
+      <h2 id="preferences-title">Configuración</h2>
+      <label class="field">
+        <span>Idioma</span>
+        <select id="language-preference"><option value="es" lang="es">Español</option><option value="en" lang="en">English</option></select>
+      </label>
+      <label class="field">
+        <span>Movimiento</span>
+        <select id="motion-preference"><option value="auto">Según el dispositivo</option><option value="reduced">Reducido</option></select>
+      </label>
+      <button type="submit" class="btn btn-dark">Listo</button>
+    </form>
+  </dialog>
+</body>
+
+</html>
