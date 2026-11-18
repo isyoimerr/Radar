@@ -100,7 +100,9 @@ Abre [RADAR en localhost](http://localhost:8000/) o consulta [la API](http://loc
 3. Configura `PUBLIC_URL` con tu dominio HTTPS. Para usar el panel editorial, define valores privados para `ADMIN_PASSWORD` y `RADAR_SESSION_KEY`. Consulta [`.env.example`](.env.example) para ver las demás variables.
 4. Despliega y abre `/api/health` en el dominio asignado.
 
-En Vercel, SQLite usa [el espacio temporal `/tmp`](https://vercel.com/docs/functions/runtimes#file-system-support). Si necesitas conservar el catálogo, las cuentas y la revisión editorial entre instancias, usa un [contenedor con volumen persistente](Dockerfile) o adapta el almacenamiento a una base gestionada.
+En Vercel, RADAR carga un [catálogo inicial de noticias públicas](static/catalog.json) y consulta las actualizaciones RSS de la rama `radar-feed`. El [workflow de publicación](.github/workflows/poll-rss.yml) actualiza esa rama sin relanzar el sitio.
+
+La copia SQLite de Vercel usa [el espacio temporal `/tmp`](https://vercel.com/docs/functions/runtimes#file-system-support). Para conservar cuentas y revisiones editoriales entre instancias, usa un [contenedor con volumen persistente](Dockerfile) o adapta el almacenamiento a una base gestionada.
 
 ## Proyecto
 

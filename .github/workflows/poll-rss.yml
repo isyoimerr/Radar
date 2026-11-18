@@ -1,11 +1,44 @@
 name: RADAR - Consulta RSS programada
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/poll-rss.yml
+
 jobs:
+  publish-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency: radar-public-catalog
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Generar catálogo público
+        run: |
+          git fetch --depth=1 origin radar-feed
+          git worktree add --detach "$RUNNER_TEMP/feed" FETCH_HEAD
+          export RADAR_DATA_DIR="$RUNNER_TEMP/radar-catalog-db"
+          python -m scripts.publish_catalog --collect --previous "$RUNNER_TEMP/feed/catalog.json" "$RUNNER_TEMP/catalog.json"
+      - name: Publicar datos
+        run: |
+          cp "$RUNNER_TEMP/catalog.json" "$RUNNER_TEMP/feed/catalog.json"
+          git -C "$RUNNER_TEMP/feed" add catalog.json
+          if git -C "$RUNNER_TEMP/feed" diff --cached --quiet; then exit 0; fi
+          git -C "$RUNNER_TEMP/feed" -c 'user.name=github-actions[bot]' -c 'user.email=41898282+github-actions[bot]@users.noreply.github.com' commit -m "Actualiza catálogo RSS"
+          git -C "$RUNNER_TEMP/feed" push origin HEAD:radar-feed
+
   poll:
     runs-on: ubuntu-latest
+    if: github.event_name != 'push'
     steps:
       - name: Ejecutar ronda remota
         env:
@@ -13,8 +46,8 @@ jobs:
           RADAR_CRON_TOKEN: ${{ secrets.RADAR_CRON_TOKEN }}
         run: |
           if [ -z "$RADAR_DEPLOY_URL" ] || [ -z "$RADAR_CRON_TOKEN" ]; then
-            echo 'Configura los secrets RADAR_DEPLOY_URL y RADAR_CRON_TOKEN.'
-            exit 1
+            echo 'El servidor persistente opcional no está configurado.'
+            exit 0
           fi
           curl --fail --show-error --silent --max-time 120 --retry 2 \
             --request POST "${RADAR_DEPLOY_URL%/}/api/internal/collect" \

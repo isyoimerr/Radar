@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
-from . import demo, store
+from . import catalog, demo, store
 from .feeds import fetch_feed, canonical, fetch_article_image, preview_image_url
 from .editorial import cluster_articles, grouping_status, independent_source_count, rank, sensitive, topic, TONE, similarity
 from .gemini import generate, fallback, AiFailure
@@ -68,6 +68,7 @@ def convert_row(record):
 
 
 def latest_news(topic_name=None, query=None, limit=100, include_sensitive=False, days=None, from_date=None, to_date=None, language=None):
+    catalog.refresh_public_catalog()
     sql='SELECT * FROM news WHERE (approved=1 OR review_needed=1)'
     if not demo.is_enabled():
         sql+=' AND is_demo=0'

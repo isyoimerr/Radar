@@ -15,7 +15,7 @@ from fastapi import FastAPI, Request, HTTPException, Response, Depends
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from . import config, store, security, demo, feeds
+from . import catalog, config, store, security, demo, feeds
 from .pipeline import collect, latest_news, top_five, convert_row, backfill_missing_media
 from .export import bulletin_html, bulletin_png, build_carousel_deck, export_carousel_zip
 from .language import LANGUAGES, source_excerpt, story_language
@@ -24,6 +24,7 @@ app=FastAPI(title='RADAR News API',version='1.0.0',docs_url='/api/docs',redoc_ur
 app.mount('/assets',StaticFiles(directory=str(config.ROOT/'static')),name='assets')
 store.init()
 demo.seed()
+catalog.seed_bundled_catalog()
 
 
 def _news_needs_refresh(min_recent_items=8, stale_seconds=None):
@@ -107,6 +108,8 @@ def start_background_scheduler():
 
 @app.on_event('startup')
 def bootstrap_news_if_empty():
+    if config.VERCEL_ENV:
+        return
     try:
         _clear_placeholder_news()
         if not store.row('SELECT 1 FROM news WHERE approved=1 AND is_demo=0 LIMIT 1'):
@@ -234,7 +237,7 @@ def frontend_config():
 @app.get('/api/news')
 def news(topic:str='Todas',q:str='',limit:int=60,days:int|None=None,from_date:str|None=None,to_date:str|None=None,lang:str|None=None):
     try:
-        if _news_needs_refresh(min_recent_items=8):
+        if not config.VERCEL_ENV and _news_needs_refresh(min_recent_items=8):
             thread = _schedule_collect(name='radar-news-refresh-background')
             thread.join(timeout=0.25)
     except Exception:
@@ -248,6 +251,7 @@ def news(topic:str='Todas',q:str='',limit:int=60,days:int|None=None,from_date:st
 
 @app.get('/api/news/{slug}')
 def story(slug:str):
+    catalog.refresh_public_catalog()
     record=store.row('SELECT * FROM news WHERE slug=? AND approved=1',(slug,))
     if not record or (record['is_demo'] and not demo.is_enabled()):
         raise HTTPException(404,'Noticia no disponible')
@@ -283,6 +287,7 @@ def generate_carousel(request: Request, payload: dict = None):
         return {'ok': True, 'message': 'Usa POST con JSON para generar el carrusel.'}
     data = payload or {}
     store.init()
+    catalog.refresh_public_catalog()
     selection = (data or {}).get('selection') or 'top5'
     slides = int((data or {}).get('slides') or 5)
     style = (data or {}).get('style') or 'Editorial'
